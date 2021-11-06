@@ -13,6 +13,10 @@ namespace RDR2DelayedPhotographyHelper.Abstract
         TimerCallback TimerCallback{get;set;}
         TimeEndHandler TimeEndEvent{get;init;}
         Task<IEnumerable<Image>> GetDelayedPhotographiesAsync();
-        Task SaveDelayedPhotographiesAsync();
+        /// <summary>
+        /// capture screen each period time in delaytime
+        /// </summary>
+        /// <returns>directory to save images</returns>
+        Task<string> SaveDelayedPhotographiesAsync();
     }
 }

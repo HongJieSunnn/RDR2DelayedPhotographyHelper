@@ -7,17 +7,17 @@ using RDR2DelayedPhotographyHelper.Abstract;
 
 namespace RDR2DelayedPhotographyHelper.LocalOperators
 {
-    public class LocalImagesOperator : ILocalImagesOperator
+    public class LocalImagesOperator : ILocalOperator
     {
-        private string _imagePath;
+        public string Path{get;set;}
         public LocalImagesOperator(string path=@"G:\RDR2Screenshot\images")
         {
-            _imagePath=path;
+            Path=path;
         }
 
-        public IEnumerable<Image> ReadLocalImages()
+        public IEnumerable<Image> ReadLocalFiles()
         {
-            var files=GetLocalImageFilenames();
+            var files=GetLocalFilesName();
             var images=new List<Image>(files.Count());
             foreach (var file in files)
             {
@@ -26,21 +26,31 @@ namespace RDR2DelayedPhotographyHelper.LocalOperators
             return images;
         }
 
-        public async Task<IEnumerable<Image>> ReadLocalImagesAsync()
+        public async Task<IEnumerable<Image>> ReadLocalFilesAsync()
         {
             await Task.Yield();
-            return ReadLocalImages();
+            return ReadLocalFiles();
         }
 
-        public IEnumerable<string> GetLocalImageFilenames()
+        public IEnumerable<string> GetLocalFilesName()
         {
-            return Directory.EnumerateFiles(_imagePath,"*.png");
+            return Directory.EnumerateFiles(Path);
         }
 
-        public async Task<IEnumerable<string>> GetLocalImageFilenamesAsync()
+        public async Task<IEnumerable<string>> GetLocalFilesNameAsync()
         {
             await Task.Yield();
-            return GetLocalImageFilenames();
+            return GetLocalFilesName();
+        }
+
+        public IEnumerable<string> GetLocalFilesNameByPattern(string pattern)
+        {
+            return Directory.EnumerateFiles(Path,pattern);
+        }
+
+        public void CreateLocalFile(string fileNamePath)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

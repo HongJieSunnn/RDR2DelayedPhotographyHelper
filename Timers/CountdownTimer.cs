@@ -17,7 +17,7 @@ namespace RDR2DelayedPhotographyHelper.Timers
         public CountdownTimer(TimeSpan delayedTime,[NotNull]ElapsedEventHandler timeEndEvent):this()
         {
             OnTimeEndEvent=timeEndEvent;
-            _timer=new Timer(delayedTime.TotalSeconds);
+            _timer=new Timer(delayedTime.TotalMilliseconds);
             _timer.Elapsed+=OnTimeEndEvent;
             _timer.AutoReset=false;//only execute once
         }

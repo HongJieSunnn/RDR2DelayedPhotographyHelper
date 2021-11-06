@@ -1,7 +1,10 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using RDR2DelayedPhotographyHelper.Abstract;
+using RDR2DelayedPhotographyHelper.LocalOperators;
 using Serilog;
 using Serilog.Core;
+using Xabe.FFmpeg;
 
 namespace RDR2DelayedPhotographyHelper.DependencyInjectionHelpers
 {
@@ -23,6 +26,12 @@ namespace RDR2DelayedPhotographyHelper.DependencyInjectionHelpers
                     .WriteTo.Console()
                     .CreateLogger();
             });
+            
+            
+            _serivces.AddTransient<IConversion,Conversion>();
+            _serivces.AddTransient<ILocalOperator,LocalVideoOperator>();
+            _serivces.AddTransient<IScreenCapturer,FullScreenCapturer>();
+
             if(!Builded)
             {
                 Builded=true;

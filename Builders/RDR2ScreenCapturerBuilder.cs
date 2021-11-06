@@ -11,7 +11,7 @@ namespace RDR2DelayedPhotographyHelper.Builders
             {
                 options.DelayedTime=TimeSpan.FromMinutes(30);
                 options.DueTime=TimeSpan.Zero;
-                options.Period=TimeSpan.FromSeconds(15);
+                options.Period=TimeSpan.FromSeconds(5);
             });
             return defaultInstance;
         }

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using RDR2DelayedPhotographyHelper.Abstract;
+using RDR2DelayedPhotographyHelper.DependencyInjectionHelpers;
 using RDR2DelayedPhotographyHelper.Timers;
+using Serilog;
 using TimeEndHandler = System.Timers.ElapsedEventHandler;
 
 namespace RDR2DelayedPhotographyHelper
@@ -14,6 +17,7 @@ namespace RDR2DelayedPhotographyHelper
         private bool _disposed=false;
         private Timer _timer;
         private CountdownTimer _countdownTimer;
+        private readonly ILogger _logger;
         private readonly object _mutex=new object();
         private readonly IList<Image> _delayedPhotographies;
         private readonly IScreenCapturer _screenCapturer;
@@ -36,7 +40,8 @@ namespace RDR2DelayedPhotographyHelper
 
         protected RDR2DelayedScreenCapturer()
         {
-            _screenCapturer=new FullScreenCapturer();
+            _screenCapturer=DependencyInjectionHelper.ServiceProvider.GetRequiredService<IScreenCapturer>();
+            _logger=DependencyInjectionHelper.ServiceProvider.GetService<ILogger>();
             _stopCountdownEvent=new AutoResetEvent(false);
         }
         public RDR2DelayedScreenCapturer(Action<RDR2DelayedScreenCapturer> options):this()
@@ -53,6 +58,7 @@ namespace RDR2DelayedPhotographyHelper
             
             TimeEndEvent=(source,args)=>
             {
+                _logger.Information("Countdown time ends.It's time to synthetic video by images.");
                 Dispose();//when countdowntime ends dispose _timer
                 _stopCountdownEvent.Set();//To notify to stop and dispose countdownTimer
             };
@@ -71,8 +77,8 @@ namespace RDR2DelayedPhotographyHelper
             await Task.Yield();
             return _delayedPhotographies;
         }
-
-        public async Task SaveDelayedPhotographiesAsync()
+        
+        public async Task<string> SaveDelayedPhotographiesAsync()
         {
             _screenCapturer.Saved=true;
             TimerCallback=(state)=>
@@ -89,6 +95,7 @@ namespace RDR2DelayedPhotographyHelper
             _countdownTimer.StopAndDispose();
 
             await Task.Yield();
+            return _screenCapturer.ImagePath;
         }
 
         public void Dispose()
